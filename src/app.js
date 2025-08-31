@@ -1,17 +1,24 @@
 const express = require('express');
 const app = express();
 
-// app.use((req, res)=>{
-//     res.send('Hello from server');
+app.use("/a{b}c", (req, res)=>{
+    res.send('use /abc route');
+});
+
+// app.use("/user", (req, res)=>{
+//     res.send('use /user route');
 // });
-app.use("/",(req, res)=>{
-    res.send('Hello from dashboard!');
+
+app.get('/user', (req, res)=>{    
+    res.send({firstname: 'Radhe', lastname: 'Shyam'});
 });
-app.use("/hello",(req, res)=>{
-    res.send('Hello Hello Hello!!');
+
+app.post('/user', (req, res)=>{
+    res.send("Saved  data successfully");
 });
-app.use("/test",(req, res)=>{
-    res.send('Hello from server');
+
+app.delete('/user', (req, res)=>{
+    res.send("Deleted data successfully");
 });
 
 app.listen(3000, ()=>{
