@@ -1,26 +1,72 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use("/a{b}c", (req, res)=>{
-    res.send('use /abc route');
+
+app.use("/", (req, res, next) => {  
+  console.log("/");
+  next();
+});
+app.use("/user", (req, res, next) => {
+ console.log("1st middleware");
+  next();
+}, (req, res, next) => {
+  console.log("2nd middleware");
+  next();    
+}, (req, res, next) => {
+  console.log("3rd middleware");
+  res.send("Response from 3rd middleware");  
 });
 
-// app.use("/user", (req, res)=>{
-//     res.send('use /user route');
+// app.use("/user", (req, res, next) => {
+//   console.log("2nd middleware");
+//   // res.send("Response from 2nd middleware");   
+//   next();
+// });
+// app.use("/user", (req, res, next) => {
+//   console.log("1st middleware");
+//   next();
 // });
 
-app.get('/user', (req, res)=>{    
-    res.send({firstname: 'Radhe', lastname: 'Shyam'});
-});
+// app.use("/user", (req, res, next) => {
+//   console.log("1st middleware");
+//   next();
+// }, [(req, res, next) => {
+//   console.log("2nd middleware");
+//   next();    
+// }, (req, res, next) => {
+//   console.log("3rd middleware");
+//   next();
+// }], (req, res, next) => {
+//   console.log("4th middleware");
+//   next();  
+// }, (req, res, next) => {
+//     console.log("5th middleware");
+//     next();
+//   }
+// );
 
-app.post('/user', (req, res)=>{
-    res.send("Saved  data successfully");
-});
+// app.use("/user", (req, res, next) => {
+//   next();
+// }, (req, res, next) => {
+//     next();    
+//   }, (req, res, next) => {
+//     next();
+//   }
+// );
 
-app.delete('/user', (req, res)=>{
-    res.send("Deleted data successfully");
-});
+// app.use("/user", (req, res, next) => {
+//     console.log("1st middleware");
+//     next();
+//     // res.send("1st route handler");
+//   }, (req, res) => {
+//     console.log("2nd middleware");
+//     res.send("2nd route handler");
+//   }, (req, res) => {
+//     console.log("3rd middleware");
+//     res.send("3rd route handler");
+//   }
+// );
 
-app.listen(3000, ()=>{
-    console.log('Server is running on port 3000');
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
 });
