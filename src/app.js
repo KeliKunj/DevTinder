@@ -1,71 +1,48 @@
 const express = require("express");
 const app = express();
+const adminAuth = require("./middlewares/auth");
 
-
-app.use("/", (req, res, next) => {  
-  console.log("/");
-  next();
-});
-app.use("/user", (req, res, next) => {
- console.log("1st middleware");
-  next();
-}, (req, res, next) => {
-  console.log("2nd middleware");
-  next();    
-}, (req, res, next) => {
-  console.log("3rd middleware");
-  res.send("Response from 3rd middleware");  
-});
-
-// app.use("/user", (req, res, next) => {
-//   console.log("2nd middleware");
-//   // res.send("Response from 2nd middleware");   
-//   next();
-// });
-// app.use("/user", (req, res, next) => {
-//   console.log("1st middleware");
-//   next();
+// app.use("/admin", (req, res, next) => {
+//   //logic of checking if request is authorizezed or not
+//   const token = "xyz";
+//   const isAuthorized = token === "xyz";
+//   if (isAuthorized) {
+//     next();
+//     res.send("All Data sent");
+//   } else {
+//     res.status(401).send("Not Authorized");
+//   }
 // });
 
-// app.use("/user", (req, res, next) => {
-//   console.log("1st middleware");
-//   next();
-// }, [(req, res, next) => {
-//   console.log("2nd middleware");
-//   next();    
-// }, (req, res, next) => {
-//   console.log("3rd middleware");
-//   next();
-// }], (req, res, next) => {
-//   console.log("4th middleware");
-//   next();  
-// }, (req, res, next) => {
-//     console.log("5th middleware");
-//     next();
-//   }
-// );
+app.use("/admin", adminAuth.authAdmin);
 
-// app.use("/user", (req, res, next) => {
-//   next();
-// }, (req, res, next) => {
-//     next();    
-//   }, (req, res, next) => {
-//     next();
-//   }
-// );
+app.get('/user', adminAuth.authUser, (req, res)=>{
+    res.send("User Route");
+});
 
-// app.use("/user", (req, res, next) => {
-//     console.log("1st middleware");
-//     next();
-//     // res.send("1st route handler");
-//   }, (req, res) => {
-//     console.log("2nd middleware");
-//     res.send("2nd route handler");
-//   }, (req, res) => {
-//     console.log("3rd middleware");
-//     res.send("3rd route handler");
-//   }
-// );
+app.get("/admin/getAllData", (req, res, next) => {
+  res.send("get All User Data");
+});
+
+app.delete("/admin/deleteUser", (req, res, next) => {
+  res.send("Deleted User");
+});
+
+app.use("/", (err, req, res, next) => {
+  if (err) {
+  res.status(500).send("Something broke!");
+}
+});
+
+app.get("/getUserData", (req, res, next) => {
+  try {
+    throw new Error("Some error occured");
+    // Logic to call database and get user data
+    res.send("get User Data");
+  } catch (error) {
+    res.status(500).send("Something went wrong! Contact admin");
+  }
+});
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
