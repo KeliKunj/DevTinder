@@ -2,36 +2,61 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const User = require("./models/user");
-const e = require("express");
+
+app.use(express.json());
 
 app.post("/signup", async(req, res) => {
-  const userObject = {
-    _id:"abc123",
-    firstName: "Garima",
-    lastName: "Negi",
-    emailId: "garimanegi@gmail.com",
-    password: "garima123",
-    age: 22,
-    gender: "Female"
-  };
   // Creating a new instance of user model
+  const user = new User(req.body);
   try{
-    const user = new User(userObject);
     await user.save();
     res.send("User Added successfully");
   }catch(err){
     console.error("Error while creating user", err);
     res.status(400).send("Error occurred: "+ err.message);
   }
-  // ------------OR----------------
-  // const user = new User({
-  //   firstName: "Garima",
-  //   lastName: "Negi",
-  //   emailId: "garimanegi@gmail.com",
-  //   password: "garima123",
-  //   age: 26,
-  //   gender: "Female"
-  // });
+});
+
+app.get("/user", async (req, res) => {
+    // get user by emailId
+    const email = req.body.emailId;
+    try{
+        const user = await User.findOne({emailId: email});
+        // const user = await User.find({emailId: email}); // returns array of users matching the email
+        // const user = await User.find({}); // No Filter
+        if(!user){
+          res.status(404).send("User not found");
+        }
+        else{
+          res.send(user);
+        }
+    } catch(err){
+        console.error("Error while fetching user", err);
+        res.status(400).send("Error occurred: "+ err.message);
+    }
+});
+
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndDelete({_id: userId});
+    res.send("User deleted successfully", user);
+  } catch (err) {
+    console.error("Error while deleting user", err);
+    res.status(500).send("Error occurred: " + err.message);
+  }
+});
+
+app.patch("/user", async (req, res) => {
+  const data = req.body;
+  try {
+    const user = await User.findByIdAndUpdate({_id: data.userId}, data,{returnDocument: 'after'});
+    console.log(user);
+    res.send("User updated successfully", user);
+  } catch (err) {
+    console.error("Error while updating user", err);
+    res.status(500).send("Error occurred: " + err.message);
+  }
 });
 
 connectDB().then(()=>{
