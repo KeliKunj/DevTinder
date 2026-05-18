@@ -49,8 +49,15 @@ app.delete("/user", async (req, res) => {
 
 app.patch("/user", async (req, res) => {
   const data = req.body;
+  // Few schema values should not be updated like emailId, password, etc.
+  const ALLOWED_UPDATES = ["userId", "firstName", "lastName", "age", "gender", "photoURL", "about", "skills"];
+  const isUpdateAllowed = Object.keys(data).every((k)=> ALLOWED_UPDATES.includes(k));
+  
   try {
-    const user = await User.findByIdAndUpdate({_id: data.userId}, data,{returnDocument: 'after'});
+    if(!isUpdateAllowed){
+      res.send("Invalid updates! Allowed updates are: " + ALLOWED_UPDATES.join(", "));
+    }
+    const user = await User.findByIdAndUpdate({_id: data.userId}, data,{returnDocument: 'after', runValidators: true});
     console.log(user);
     res.send("User updated successfully", user);
   } catch (err) {
