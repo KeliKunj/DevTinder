@@ -18,19 +18,19 @@ const userSchema = mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw new Error("Invalid email format: "+ value);
-            }
-        }
+        // validate(value){
+        //     if(!validator.isEmail(value)){
+        //         throw new Error("Invalid email format: "+ value);
+        //     }
+        // }
     },
     password: {
         type: String,
-        validate(value){
-            if(!validator.isStrongPassword(value, {minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})){
-                throw new Error("Weak password. "+value);
-            }
-        }
+        // validate(value){
+        //     if(!validator.isStrongPassword(value, {minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})){
+        //         throw new Error("Weak password. "+value);
+        //     }
+        // }
     },
     age: {
         type: Number,
@@ -39,20 +39,20 @@ const userSchema = mongoose.Schema({
         type: String,        
         // enum: ["Male", "Female", "Other"],
         // Custom Validation
-        validate(value){
-            if(!["Male", "Female", "Other"].includes(value)){
-                throw new Error("Invalid gender value. Allowed values are: Male, Female, Other");
-            }
-        }
+        // validate(value){
+        //     if(!["Male", "Female", "Other"].includes(value)){
+        //         throw new Error("Invalid gender value. Allowed values are: Male, Female, Other");
+        //     }
+        // }
     },
     photoURL:{
         type: String,
         default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-        validate(value){
-            if(!validator.isURL(value)){
-                throw new Error("Invalid photoURL format: "+ value);
-            }
-        }
+        // validate(value){
+        //     if(!validator.isURL(value)){
+        //         throw new Error("Invalid photoURL format: "+ value);
+        //     }
+        // }
     },
     about:{
         type: String,
