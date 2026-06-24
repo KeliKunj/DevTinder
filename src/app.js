@@ -2,13 +2,68 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const User = require("./models/user");
-
+const {validateSignUpData} = require("./utils/validation");
+const bcrypt = require("bcrypt");
+const cookie = require("cookie");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 app.use(express.json());
+app.use(cookieParser());
+
+app.get("/profile", async(req, res)=>{
+  const cookies = req.cookies;
+  console.log("Cookies: ", cookies);
+  const {token} = cookies;
+  const decodedMessage = jwt.verify(token, "DevTinder@123");
+  console.log(decodedMessage);
+  const {_id} = decodedMessage;
+  
+  const user = await User.findById({_id});
+  res.send(user);
+});
+
+app.post("/login", async(req, res)=>{
+  try{
+      const {emailId, password} = req.body;
+      const user = await User.findOne({emailId: emailId});
+
+    if(!user){
+      throw new Error("Invalid EmailId: "+ emailId);
+    }
+    //Comparing Password with valid emailId
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if(isPasswordValid){
+      //Create a JWT Token
+      const token = jwt.sign({_id:user._id}, "DevTinder@123");
+      console.log("JWT Token: ", token);
+
+      //Add token in cookie and send it to the user
+      res.cookie("token", token);
+      // res.cookie("userId", isEmailValid._id, {httpOnly: true, maxAge: 24*60*60*1000}); // 1 day (H M S msec)
+      res.send("Login Successful");
+    }
+    else{
+      throw new Error("Invalid Password");
+    }
+  }catch(err){
+    res.status(500).send("ERROR: Something went wrong"+ err.message);
+  }
+})
 
 app.post("/signup", async(req, res) => {
-  // Creating a new instance of user model
-  const user = new User(req.body);
   try{
+    let {firstName, lastName, emailId, password, age, gender, photoURL, about} = req.body;
+    // Validations on the user sign-up data
+    validateSignUpData(req);
+    
+    //Encrypting the password
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log("Hashed password: ", passwordHash);    
+    // user.password = passwordHash;
+
+    // Creating a new instance of user model
+    const user = new User({firstName, lastName, emailId, password: passwordHash, age, gender, photoURL, about});
     await user.save();
     res.send("User Added successfully");
   }catch(err){

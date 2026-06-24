@@ -20,8 +20,8 @@ const validateSignUpData = (req)=>{
     else if(!["Male", "Female", "Other"].includes(gender)){
         throw new Error("Invalid gender value. Allowed values are: Male, Female, Other");
     }
-    else if(!validator.isURL(value)){
-        throw new Error("Invalid photoURL format: "+ value);
+    else if(!validator.isURL(photoURL)){
+        throw new Error("Invalid photoURL format: "+ photoURL);
     }
 }
 

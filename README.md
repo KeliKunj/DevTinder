@@ -69,6 +69,13 @@
 - Explore validator library funcation and Use vlidator funcs for password, email
 - NEVER TRUST req.body. password
 
+## Encrypted Password
+- DO Validations on req.body ALWAYS
+- Validations of request parameters ==> Encrypt Password, User model instance, Exception & Error handling
+
+## Authentication, JWT and Cookies
+- npm i cookie, npm i cookie-parser, npm i jsonwebtoken
+- Authentication MiddleWare
 
 
 ### To Use Mongo DB - https://cloud.mongodb.com/v2/689a0371b7a2da30974e32a2#/clusters - Provide IP
