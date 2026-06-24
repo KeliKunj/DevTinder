@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 const userSchema = mongoose.Schema({
     firstName: {
         type: String,
@@ -17,42 +20,20 @@ const userSchema = mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        trim: true,
-        // validate(value){
-        //     if(!validator.isEmail(value)){
-        //         throw new Error("Invalid email format: "+ value);
-        //     }
-        // }
+        trim: true,        
     },
     password: {
-        type: String,
-        // validate(value){
-        //     if(!validator.isStrongPassword(value, {minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})){
-        //         throw new Error("Weak password. "+value);
-        //     }
-        // }
+        type: String,       
     },
     age: {
         type: Number,
     },
     gender: {
-        type: String,        
-        // enum: ["Male", "Female", "Other"],
-        // Custom Validation
-        // validate(value){
-        //     if(!["Male", "Female", "Other"].includes(value)){
-        //         throw new Error("Invalid gender value. Allowed values are: Male, Female, Other");
-        //     }
-        // }
+        type: String,               
     },
     photoURL:{
         type: String,
-        default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-        // validate(value){
-        //     if(!validator.isURL(value)){
-        //         throw new Error("Invalid photoURL format: "+ value);
-        //     }
-        // }
+        default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",       
     },
     about:{
         type: String,
@@ -64,6 +45,24 @@ const userSchema = mongoose.Schema({
 },{
         timestamps: true,
 });
+
+// Creatinf JWT at schema Level
+userSchema.methods.getJWT = async function(){
+    try{
+        const user = this;
+        const token = await jwt.sign({_id:user._id}, "DevTinder@123", {expiresIn: "7d"});
+        return token;
+    }catch(err){
+        throw new Error("Error in creating JWT at schema level: "+ err.message);
+    }
+};
+
+userSchema.methods.validatePassword = async function(passWordByUser){
+    const user = this;
+    const passwordHash = user.password;
+    const isPasswordValid = await bcrypt.compare(passWordByUser, passwordHash);
+    return isPasswordValid;
+}
 
 const userModel = mongoose.model("User", userSchema);
 module.exports = userModel;

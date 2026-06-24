@@ -72,10 +72,21 @@
 ## Encrypted Password
 - DO Validations on req.body ALWAYS
 - Validations of request parameters ==> Encrypt Password, User model instance, Exception & Error handling
+- Validate data in Signup API
+- Install bcrypt package
+- Create PasswordHash using bcrypt.hash & save the user is excrupted password
+- Create login API
+- Compare passwords and throw errors if email or password is invalid
 
 ## Authentication, JWT and Cookies
 - npm i cookie, npm i cookie-parser, npm i jsonwebtoken
 - Authentication MiddleWare
+- install cookie-parse
+- just send a dummy cookie to user
+- create GET /profile APi and check if you get the cookie back
+- install jsonwebtoken
+- IN login API, after email and password validation, create e JWT token and send it to user in cookies
+- read the cookies inside your profile API and find the Logged in user
 
 
 ### To Use Mongo DB - https://cloud.mongodb.com/v2/689a0371b7a2da30974e32a2#/clusters - Provide IP

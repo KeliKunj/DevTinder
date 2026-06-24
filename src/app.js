@@ -7,19 +7,25 @@ const bcrypt = require("bcrypt");
 const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const { userAuth } = require("./middlewares/auth");
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/profile", async(req, res)=>{
-  const cookies = req.cookies;
-  console.log("Cookies: ", cookies);
-  const {token} = cookies;
-  const decodedMessage = jwt.verify(token, "DevTinder@123");
-  console.log(decodedMessage);
-  const {_id} = decodedMessage;
-  
-  const user = await User.findById({_id});
-  res.send(user);
+app.post("/sendConnectionRequest", userAuth, (req, res)=>{
+  try{
+    const user = req.user;
+    res.send(user.firstName+" has sent a connection request.");
+  }catch(err){
+    res.status(400).send("ERROR: "+err.message);
+  }
+})
+app.get("/profile", userAuth,  async(req, res)=>{
+  try {
+    const user = req.user;       
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("ERROR: "+err.message);
+  }
 });
 
 app.post("/login", async(req, res)=>{
@@ -31,11 +37,14 @@ app.post("/login", async(req, res)=>{
       throw new Error("Invalid EmailId: "+ emailId);
     }
     //Comparing Password with valid emailId
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = user.validatePassword(password);
 
     if(isPasswordValid){
-      //Create a JWT Token
-      const token = jwt.sign({_id:user._id}, "DevTinder@123");
+      //Create a JWT Token at API Level
+      // const token = jwt.sign({_id:user._id}, "DevTinder@123", {expiresIn: "7d"});
+
+      //Calling the getJWT method defined at schema level to create JWT
+      const token = await user.getJWT();
       console.log("JWT Token: ", token);
 
       //Add token in cookie and send it to the user
@@ -47,7 +56,7 @@ app.post("/login", async(req, res)=>{
       throw new Error("Invalid Password");
     }
   }catch(err){
-    res.status(500).send("ERROR: Something went wrong"+ err.message);
+    res.status(500).send("ERROR: "+ err.message);
   }
 })
 
