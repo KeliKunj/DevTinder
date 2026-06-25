@@ -1,13 +1,15 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+// const cookieParser = require("cookie-parser");
 
 const userAuth = async(req, res, next)=>{
       try{
-            const cookies = req.cookies;
-            const {token} = cookies;
+            const cookie = req.headers.cookie;                        
+            const token = cookie.split("=")[1];
             
             // validating token
-            const decodedObject = jwt.verify(token, "DevTinder@123");
+            const decodedObject =  jwt.verify(token, "DevTinder@123");
+            console.log("Decoded Object: ", decodedObject);
             const {_id} = decodedObject;
             const user = await User.findById({_id});
             if(!user){
