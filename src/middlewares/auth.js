@@ -8,8 +8,7 @@ const userAuth = async(req, res, next)=>{
             const token = cookie.split("=")[1];
             
             // validating token
-            const decodedObject =  jwt.verify(token, "DevTinder@123");
-            console.log("Decoded Object: ", decodedObject);
+            const decodedObject =  jwt.verify(token, "DevTinder@123");            
             const {_id} = decodedObject;
             const user = await User.findById({_id});
             if(!user){

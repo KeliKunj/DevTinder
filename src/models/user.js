@@ -46,6 +46,9 @@ const userSchema = mongoose.Schema({
         timestamps: true,
 });
 
+// User.find({firstName:"Garima", lastName:"Negi"});
+userSchema.index({firstName:1, lastName:1});
+
 // Creatinf JWT at schema Level
 userSchema.methods.getJWT = async function(){
     try{

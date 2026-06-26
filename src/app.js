@@ -6,11 +6,11 @@ app.use(express.json());
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
-const requestsRouter = require("./routes/requests");
+const requestRouter = require("./routes/request");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
-app.use("/", requestsRouter);
+app.use("/", requestRouter);
 
 connectDB().then(()=>{
     console.log("Database connected");
