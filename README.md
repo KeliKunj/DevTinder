@@ -106,6 +106,17 @@
 - **HW** Create PATCH /profile/password API = forgot password API
 - Make you validate all data in every POST, PATCH apis
 
-
+## Logical DB Query & Compound Indexes
+- Create Connnection Request Schema
+- Send Connection Request API
+- Proper validation of Data
+- Think about ALL corner cases
+- $or query $and query in mongoose - https://www.mongodb.com/docs/manual/reference/mql/query-predicates/logical/
+- schema.pre("save") function
+- Read more about indexes in MongoDB
+- Why do we need index in DB?
+- What is the advantages and disadvantage of creating?
+- Read this arcticle about compond indexes - https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/
+- ALWAYS THINK ABOUT CORNER CASES
 
 ### To Use Mongo DB - https://cloud.mongodb.com/v2/689a0371b7a2da30974e32a2#/clusters - Provide IP
