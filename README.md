@@ -119,4 +119,9 @@
 - Read this arcticle about compond indexes - https://www.mongodb.com/docs/manual/core/indexes/index-types/index-compound/
 - ALWAYS THINK ABOUT CORNER CASES
 
+## Ref, Populate & Thought process of writing APIs
+- Write code with proper validations for POST /request/review/:status/:requestId
+- Thought process - POST vs GET
+
+
 ### To Use Mongo DB - https://cloud.mongodb.com/v2/689a0371b7a2da30974e32a2#/clusters - Provide IP

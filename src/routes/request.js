@@ -12,7 +12,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async(req, res)=
     const status = req.params.status;
 
     // 1. STATUS Validation
-    const allowedStatus = ["iignored", "interested"];
+    const allowedStatus = ["ignored", "interested"];
     if(!allowedStatus.includes(status)){
       return res.status(400).json({
         message: `Invalid status type: '${status}'.`
@@ -54,4 +54,43 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async(req, res)=
     res.status(400).send("ERROR: "+err.message);
   }
 });
+
+requestRouter.post("/request/review/:status/:requestId", userAuth, async(req, res)=>{
+  try{
+    const loggedInUser = req.user;
+    const {status, requestId} = req.params;
+    // SCENARIO: Akshay----------connectionRequest--------->Elon
+    // 1. verify loggedInUser = toUserId = Elon
+    // 2. status = interested
+    // 3. allowed status validation = ["accepted", "rejected"]
+    // 4. requestId should be valid
+
+    const allowedStatus = ["accepted", "rejected"];
+    if(!allowedStatus.includes(status)){
+      res.status(400).json({
+        message: `Invalid status value: ${status}`
+      });
+    }
+
+    const connectionRequest = await ConnectionRequestModel.findOne({
+      _id: requestId,
+      toUserId: loggedInUser,
+      status: "interested"
+    });
+    if(!connectionRequest){
+      res.status(400).json({
+        message: "Connection request not found."
+      });
+    }    
+    connectionRequest.status = status;
+    const data = await connectionRequest.save();
+    res.json({
+      message: "Connection Request: "+ status, 
+      data
+    });
+  }catch(err){
+    res.status(500).send("ERROR: "+err.message);
+  }
+});
+
 module.exports = requestRouter;
