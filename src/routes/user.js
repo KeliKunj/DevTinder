@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequestModel = require("../models/connectionRequest");
+const User = require("../models/user");
 
 const USER_SAFE_DATA = "firstName lastName age gender about skills";
 
@@ -55,5 +56,60 @@ userRouter.get("/user/connections", userAuth, async(req, res)=>{
         res.status(400).send("ERROR: "+err.message);
     }
 });
+
+userRouter.get("/feed", userAuth, async(req, res)=>{
+    // User should see all the user cards except:
+    // 0. his own card
+    // 1. his connection
+    // 2. ignored people
+    // 3. already sent connection request
+
+    // EXAMPLE: ["Rahul", "Akshay", "Elon", "Mark", "Donald", "MS Dhoni", "Virat"]
+    // Rahul--------->Akshay                            Rahul--------->Elon
+    // Rahul==feed===>>>>> ["Mark", "Donald", "MS Dhoni", "Virat"]
+    // Rahul--------->Akshay--------->Rejected          Rahul--------->Elon--------->Accepted
+    // Rahul==feed===>>>>> ["Mark", "Donald", "MS Dhoni", "Virat"]
+    // Akshay==feed==>>>>> ["Elon", "Mark", "Donald", "MS Dhoni", "Virat"] (Rejected 'Rahul' (X))
+    // Elon===feed===>>>>> ["Akshay", "Mark", "Donald", "MS Dhoni", "Virat"] (Accepted 'Rahul'(X))
+
+    const loggedInUser = req.user;
+
+    // Find connection requests (Sent + Received)
+    const connectionRequests = await ConnectionRequestModel.find({
+        $or:[
+            {toUserId: loggedInUser},
+            {fromUserId: loggedInUser}
+        ]
+    })
+    .select("fromUserId toUserId")
+    .populate("fromUserId", "firstName")
+    .populate("toUserId", "firstName");
+    
+    const hideUsersFromFeed = new Set();
+    connectionRequests.forEach((req)=>{
+        hideUsersFromFeed.add(req.fromUserId._id.toString());
+        hideUsersFromFeed.add(req.toUserId._id.toString());
+    });
+    
+    const page = req.query.page;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit>50 ? 50: limit;
+    const skip = (page-1)*limit;
+
+    const users = await User.find({
+        //_id: {$nin: Array.from(hideUsersFromFeed), $ne: loggedInUser._id}
+        $and:[
+            {_id: {$nin: Array.from(hideUsersFromFeed)}}, 
+            {_id: {$ne: loggedInUser._id}}]
+    })
+    .select(USER_SAFE_DATA)
+    .skip(skip)
+    .limit(limit);
+    res.json({
+        message: loggedInUser.firstName+"'s feed fetched",
+        data: users,
+        totalData: users.length
+    });
+})
 
 module.exports = userRouter

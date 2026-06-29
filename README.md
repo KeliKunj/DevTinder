@@ -123,5 +123,17 @@
 - Write code with proper validations for POST /request/review/:status/:requestId
 - Thought process - POST vs GET
 
+## Feed API & pagination
+- Pagination: 
+- Skip= No. of doc. need to be skipped
+- Limit= No. of doc. to be fetched
+---------------------------------------
+||       skip = (page-1)*limit       ||
+---------------------------------------
+- .skip(0) & .limit(10): /feed?page=1&limit=10 -----> first 10 users (1-10)
+- .skip(10) & .limit(10): /feed?page=2&limit=10 -----> next 10 users (11-20)
+- .skip(20) & .limit(10): /feed?page=3&limit=10 -----> next 10 users (21-30)
+
+- Difference params (/feed/skip) & query (/feed?skip)
 
 ### To Use Mongo DB - https://cloud.mongodb.com/v2/689a0371b7a2da30974e32a2#/clusters - Provide IP
