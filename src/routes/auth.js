@@ -30,8 +30,8 @@ authRouter.post("/login", async(req, res)=>{
     if(!user){
       throw new Error("Invalid EmailId: "+ emailId);
     }
-    //Comparing Password with valid emailId
-    const isPasswordValid = user.validatePassword(password);
+    //Comparing Password with valid emailId-------Not Working
+    const isPasswordValid = await user.validatePassword(password);
 
     if(isPasswordValid){
       //Create a JWT Token at API Level
@@ -44,7 +44,10 @@ authRouter.post("/login", async(req, res)=>{
       //Add token in cookie and send it to the user
       res.cookie("token", token);
       // res.cookie("userId", isEmailValid._id, {httpOnly: true, maxAge: 24*60*60*1000}); // 1 day (H M S msec)
-      res.send("Login Successful");
+      res.send({
+        message: "Login Successful",
+        data: user
+      });
     }
     else{
       throw new Error("Invalid Password");
