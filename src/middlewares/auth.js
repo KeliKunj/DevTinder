@@ -6,6 +6,7 @@ const userAuth = async(req, res, next)=>{
       try{
             const cookie = req.headers.cookie;                        
             const token = cookie.split("=")[1];
+            // const token = cookie?.split(";").find((part) => part.trim().startsWith("token="))?.split("=")[1];
             
             // validating token
             if(!token) return res.status(401).send("Please login");
